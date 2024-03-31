@@ -8,7 +8,7 @@ class map extends StatelessWidget {
     126.921252,
   );
   static final Marker marker = Marker(
-    markerId: MarkerId('travel'),
+    markerId: MarkerId('medicine'), //travel -> medicine으로 바꿈
     position: companyLatLng,
   );
 
