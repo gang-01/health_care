@@ -13,21 +13,55 @@ class _HomeScreenState extends State<HomeScreen>{
 
   @override
   Widget build(BuildContext context){
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.grey,
-          title: Text('Health Care'),
-          centerTitle: true,
-        ),
-        body: SingleChildScrollView(
-          child: Container(
-            child: Column(
+    final title= 'Health Care'; //AppBar에 넣을 문구
 
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [_Weather(), _Status()],
+    return MaterialApp(
+      title: title,
+      home: Scaffold(
+        appBar: AppBar(title: Text(title),centerTitle: true),
+        body: SafeArea(
+          child: GridView(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, //행에 보여줄 item 개수
+              childAspectRatio: 1 / 2, //가로,세로 비율
             ),
+            children: [
+              Container(
+                color: Colors.redAccent,
+                child: Icon(Icons.sunny),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Container(
+                    child: Text('현위치: '),
+                  ),
+                  Container(
+                    child: Text('날씨에 따른 주의사항: '),
+                  ),
+                  Container(
+                    child: Text('미세먼지: '),
+                  )
+                ],
+              ),
+              Container(
+                color: Colors.black,
+                child: Image.asset('assets/med.jpg'),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Container(
+                    color: Colors.deepPurple,
+                    child: Text('걸음수: '),
+                  ),
+                  Container(
+                    color: Colors.blue,
+                    child: Text('연령대별 고민 질환'),
+                  )
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -35,7 +69,9 @@ class _HomeScreenState extends State<HomeScreen>{
   }
 }
 
-// 날씨 상태 보여주는 칸
+
+
+
 class _Weather extends StatelessWidget{
   @override
   Widget build(BuildContext context){
@@ -55,7 +91,8 @@ class _Weather extends StatelessWidget{
   }
 }
 
-//건강상태 보여주는 칸
+
+
 class _Status extends StatelessWidget{
   @override
   Widget build(BuildContext context){
