@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 //import 'package:url_launcher/url_launcher.dart';
-import 'package:health/main.dart';
+import 'package:health/screen/HomeScreen.dart';
 
 // 로그인 화면
 class LoginPage extends StatefulWidget { //StatefulWidget 로 설정
@@ -39,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(
                   child: Column(
                     children: [
-                      Text('HEALTH', style: TextStyle(fontSize: 50)),
+                      Text('HEALTH CARE', style: TextStyle(fontSize: 50)),
                     ],
                   ),
                 ),
@@ -83,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                         if (_formKey.currentState!.validate()) {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => Screen()),
+                            MaterialPageRoute(builder: (context) => HomeScreen()),
                           );
                         }
                       },
