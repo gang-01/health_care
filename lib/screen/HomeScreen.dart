@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen>{
           child: GridView(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2, //행에 보여줄 item 개수
-              childAspectRatio: 1 / 2, //가로,세로 비율
+              childAspectRatio: 1, //가로,세로 비율
             ),
             children: [
               Container(
@@ -69,9 +69,6 @@ class _HomeScreenState extends State<HomeScreen>{
   }
 }
 
-
-
-
 class _Weather extends StatelessWidget{
   @override
   Widget build(BuildContext context){
@@ -90,8 +87,6 @@ class _Weather extends StatelessWidget{
     );
   }
 }
-
-
 
 class _Status extends StatelessWidget{
   @override
