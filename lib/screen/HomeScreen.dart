@@ -56,16 +56,23 @@ class _HomeScreenState extends State<HomeScreen>{
                     color: Colors.deepPurple,
                     child: Text('걸음수: '),
                   ),
-                  Container(
-                    color: Colors.blue,
-                    child: Text('연령대별 고민 질환'),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const map()),
+                        );
+                      },
+                        child: Text('Search', style: TextStyle(fontSize: 25)),
                   )
                 ],
               ),
-              Container(
-                color: Colors.yellow,
-                child: map(),
-              )
             ],
           ),
         ),
