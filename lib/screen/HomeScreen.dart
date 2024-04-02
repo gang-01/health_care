@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:health/screen/Map.dart';
+import 'package:health/screen/Login.dart';
 
 class HomeScreen extends StatefulWidget{
   const HomeScreen({Key? key}): super(key:key);
@@ -11,6 +13,24 @@ class HomeScreen extends StatefulWidget{
 }
 
 class _HomeScreenState extends State<HomeScreen>{
+  User? loggedUser;
+
+  void getCurrentUser() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        loggedUser = user;
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  @override
+  void iniState() {
+    super.initState();
+    getCurrentUser();
+  }
 
   @override
   Widget build(BuildContext context){
@@ -19,7 +39,12 @@ class _HomeScreenState extends State<HomeScreen>{
     return MaterialApp(
       title: title,
       home: Scaffold(
-        appBar: AppBar(title: Text(title),centerTitle: true),
+        appBar: AppBar(
+            title: Text(title),
+            centerTitle: true,
+            leading: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginSignupScreen()));},
+              child: Text('LogOut', style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold,color: Colors.black),)),
+        ),
         body: SafeArea(
           child: GridView(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -29,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen>{
             children: [
               Container(
                 color: Colors.redAccent,
-                child: Icon(Icons.sunny),
+                child: (Icon(Icons.sunny)),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,

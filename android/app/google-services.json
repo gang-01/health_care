@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "187279847237",
+    "project_id": "uploader-c5f45",
+    "storage_bucket": "uploader-c5f45.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:187279847237:android:6b46a2a981f3750c7cd82c",
+        "android_client_info": {
+          "package_name": "com.example.health"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "187279847237-aa4032ojojru7n27hk6350nd1qtsvl8d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.health",
+            "certificate_hash": "be9da463f37b6e2dbdc5cabab73f109689a8db72"
+          }
+        },
+        {
+          "client_id": "187279847237-32mfemrhi61ekftqdt7ed27u6ma044u7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZGcpeqxRYiZf9NQh7gw9kQmAAsFicFa4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "187279847237-32mfemrhi61ekftqdt7ed27u6ma044u7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "187279847237-1b2hgt8riktpvpdcrt9om8d219essptk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.health"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
