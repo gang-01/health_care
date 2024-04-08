@@ -49,6 +49,7 @@ dependencies:
   platform:
   shared_preferences:
   http: ^0.13.3
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

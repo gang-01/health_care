@@ -690,8 +690,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                             signInWithGoogle();
                           },
                           style: TextButton.styleFrom(
-                            primary: Colors.white,
-                            minimumSize: Size(155, 40),
+                            foregroundColor: Colors.white, minimumSize: Size(155, 40),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
@@ -715,8 +714,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                         TextButton.icon(
                           onPressed: () {   },
                           style: TextButton.styleFrom(
-                            primary: Colors.white,
-                            minimumSize: Size(155, 40),
+                            foregroundColor: Colors.white, minimumSize: Size(155, 40),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),
@@ -732,8 +730,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                           onPressed: () {
                           },
                           style: TextButton.styleFrom(
-                            primary: Colors.white,
-                            minimumSize: Size(155, 40),
+                            foregroundColor: Colors.white, minimumSize: Size(155, 40),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
                             ),

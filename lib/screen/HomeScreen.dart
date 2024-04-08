@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:health/screen/Map.dart';
 import 'package:health/screen/Login.dart';
+import 'package:health/screen/Weather_Screen.dart';
+import 'package:health/screen/loading.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget{
   const HomeScreen({Key? key}): super(key:key);
@@ -54,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen>{
             children: [
               Container(
                 color: Colors.redAccent,
-                child: (Icon(Icons.sunny)),
+                child: Loading(),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -139,6 +142,54 @@ class _Status extends StatelessWidget{
             Image.asset('assets/med.jpg'),
             Text(('Status'))
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class Loading extends StatefulWidget {
+  const Loading({Key? key}) : super(key: key);
+
+  @override
+  _LoadingState createState() => _LoadingState();
+}
+
+class _LoadingState extends State<Loading> {
+  void getLocation() async {
+    // 기본설정은 아래처럼 하면 자신의 위도/경도 위치를 알수 있다.
+    LocationPermission permission = await Geolocator.requestPermission();
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    debugPrint(position.toString());
+
+    // Navigate to the new screen after getting the location
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Loading()));
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: GestureDetector(
+          onTap: getLocation,
+          child: Container(
+            width: 250,
+            height: 250,
+            decoration: BoxDecoration(
+              color: Colors.red,
+              //borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              Icons.wb_sunny,
+              size: 50,
+              color: Colors.yellow,
+            ),
+          ),
         ),
       ),
     );
