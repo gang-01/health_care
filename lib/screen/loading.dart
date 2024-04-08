@@ -19,13 +19,14 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> {
+
   late double latitude;
   late double longitude;
 
   @override
   void initState() {
     super.initState();
-    getLocation();
+    //getLocation();
   }
 
   void getLocation() async {
@@ -49,7 +50,7 @@ class _LoadingState extends State<Loading> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => Loading()));
+            builder: (context) => WeatherScreen(weatherData: weatherData)));
   }
 
   @override
@@ -58,7 +59,8 @@ class _LoadingState extends State<Loading> {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            debugPrint('ElevatedButton clicked~~');
+            debugPrint('clicked~~');
+            getLocation();
           },
           child: const Text('Get my location',
             style: TextStyle(color: Colors.black),

@@ -147,7 +147,7 @@ class _Status extends StatelessWidget{
     );
   }
 }
-
+/*
 class Loading extends StatefulWidget {
   const Loading({Key? key}) : super(key: key);
 
@@ -195,3 +195,4 @@ class _LoadingState extends State<Loading> {
     );
   }
 }
+*/
