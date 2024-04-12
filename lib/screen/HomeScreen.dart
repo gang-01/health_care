@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:health/screen/Map.dart';
 import 'package:health/screen/Login.dart';
+import 'package:health/screen/Search.dart';
 import 'package:health/screen/Weather_Screen.dart';
 import 'package:health/screen/loading.dart';
 import 'package:intl/intl.dart';
@@ -40,15 +41,40 @@ class _HomeScreenState extends State<HomeScreen>{
     final title= 'Health Care'; //AppBar에 넣을 문구
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: title,
       home: Scaffold(
         appBar: AppBar(
-            title: Text(title),
+            title: Text(
+              title,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 25,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             centerTitle: true,
-            leading: TextButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginSignupScreen()));},
-              child: Text('LogOut', style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold,color: Colors.black),)),
+            backgroundColor: Colors.lightGreen,
+            leading: IconButton(
+              icon: Icon(Icons.logout),
+                onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginSignupScreen()));
+                  },
+            ),
+            actions: [
+              IconButton(
+                icon: Icon(Icons.map),
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const map()),
+                  );
+                },
+              )
+            ],
         ),
-        body: SafeArea(
+        body:
+        SafeArea(
           child: GridView(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2, //행에 보여줄 item 개수
@@ -63,7 +89,8 @@ class _HomeScreenState extends State<HomeScreen>{
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Container(
-                    child: TextButton(onPressed: (){map();},child: Text('현위치'),),
+                    child: TextButton(onPressed: (){map();},
+                      child: Text('현위치'),),
                   ),
                   Container(
                     child: Text('날씨에 따른 주의사항: '),
@@ -74,8 +101,15 @@ class _HomeScreenState extends State<HomeScreen>{
                 ],
               ),
               Container(
-                color: Colors.black,
-                child: Image.asset('assets/med.jpg'),
+                color: Colors.white,
+                  child: IconButton(
+                    icon: Image.asset('assets/medicine.png'),
+                    iconSize: 1,
+                    onPressed: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> Search()));
+                    },
+                )
+
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -86,6 +120,7 @@ class _HomeScreenState extends State<HomeScreen>{
                   ),
                 ],
               ),
+              /*
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -101,6 +136,7 @@ class _HomeScreenState extends State<HomeScreen>{
                   )
                 ],
               ),
+              */
             ],
           ),
         ),
@@ -147,52 +183,4 @@ class _Status extends StatelessWidget{
     );
   }
 }
-/*
-class Loading extends StatefulWidget {
-  const Loading({Key? key}) : super(key: key);
 
-  @override
-  _LoadingState createState() => _LoadingState();
-}
-
-class _LoadingState extends State<Loading> {
-  void getLocation() async {
-    // 기본설정은 아래처럼 하면 자신의 위도/경도 위치를 알수 있다.
-    LocationPermission permission = await Geolocator.requestPermission();
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    debugPrint(position.toString());
-
-    // Navigate to the new screen after getting the location
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => Loading()));
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: GestureDetector(
-          onTap: getLocation,
-          child: Container(
-            width: 250,
-            height: 250,
-            decoration: BoxDecoration(
-              color: Colors.red,
-              //borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              Icons.wb_sunny,
-              size: 50,
-              color: Colors.yellow,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-*/

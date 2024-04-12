@@ -64,7 +64,7 @@ class _LoadingState extends State<Loading> {
           },
           child: const Text(
             'Get my location',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.black),
           ),
         ),
       ),

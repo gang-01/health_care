@@ -59,7 +59,7 @@ class map extends StatelessWidget {
 AppBar renderAppBar() {
   return AppBar(
     title: Text(
-      'HEALTH',
+      'Health Care',
       style: TextStyle(
         color: Colors.white,
         fontWeight: FontWeight.w700,

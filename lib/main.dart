@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:health/screen/HomeScreen.dart';
 import 'package:health/screen/Login.dart';
+import 'package:health/screen/Map.dart';
+import 'package:health/screen/Map_screen.dart';
 import 'package:health/screen/loading.dart';
 import'package:firebase_core/firebase_core.dart';
 import 'package:health/firebase_options.dart';
