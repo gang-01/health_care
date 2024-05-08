@@ -154,20 +154,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         Container(
                           child: TextButton(
                             onPressed: () {
+                              /*
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => const map()),
                               );
+                               */
                             },
-                            child: Text('현위치'),
+                            child: Text('만보기'),
                           ),
                         ),
-                        Container(
-                          child: Text('날씨에 따른 주의사항: '),
-                        ),
-                        Container(
-                          child: Text('미세먼지: '),
-                        )
                       ],
                     ),
                     GestureDetector(
@@ -181,15 +177,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Colors.white,
                         child: Image.asset('assets/med.png'),
                       ),
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Container(
-                          color: Colors.deepPurple,
-                          child: Text('걸음수: '),
-                        ),
-                      ],
                     ),
                   ],
                 ),
