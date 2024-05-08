@@ -2,48 +2,63 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:health/model/current_weather.dart';
+//import 'package:health/model/current_weather.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:timer_builder/timer_builder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:health/model/model.dart';
+import 'package:geolocator/geolocator.dart';
 
 class WeatherScreen extends StatefulWidget {
-  final CurrentWeather weatherData;
-
-  const WeatherScreen({Key? key, required this.weatherData}) : super(key: key);
+  WeatherScreen({this.parseWeatherData, this.parseAirPollution});
+  final dynamic parseWeatherData;
+  final dynamic parseAirPollution;
 
   @override
-  State<WeatherScreen> createState() => _WeatherScreenState();
+  _WeatherScreenState createState() => _WeatherScreenState();
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
+  Model model = Model();
   late String cityName;
   late int temp;
-  late String currentDate;
+  late Widget icon;
+  late String des;
+  late Widget airIcon;
+  late Widget airState;
+  late double dust1;
+  late double dust2;
   var date = DateTime.now();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    updateData(widget.weatherData);
+    updateData(widget.parseWeatherData, widget.parseAirPollution);
   }
 
-  void updateData(CurrentWeather weatherData) {
-    var dt = weatherData.dt!;
-    var timezone = weatherData.timezone!;
-    var tempTime = DateTime.fromMillisecondsSinceEpoch((dt + timezone) * 1000);
+  void updateData(dynamic weatherData, dynamic airData) {
+    double temp2 = weatherData['main']['temp'].toDouble();
+    int condition = weatherData['weather'][0]['id'];
+    int index = airData['list'][0]['main']['aqi'];
+    des = weatherData['weather'][0]['description'];
+    dust1 = airData['list'][0]['components']['pm10'];
+    dust2 = airData['list'][0]['components']['pm2_5'];
+    temp = temp2.round();
+    setState(() {
+      cityName = weatherData['name'];
+      icon = model.getWeatherIcon(condition);
+      airIcon = model.getAirIcon(index);
+      airState = model.getAirCondition(index);
+    });
 
-    cityName = weatherData.name!;
-    temp = weatherData.main!.temp!.round();
-    currentDate = DateFormat('yyyy-MM-dd, HH:mm:ss').format(tempTime);
-    debugPrint('cityName[$cityName], temp[${weatherData.main!.temp}]');
-    debugPrint('dt[$dt], timezone[$timezone], Date[$currentDate]');
+    print(temp);
+    print(cityName);
   }
 
   String getSystemTime() {
     var now = DateTime.now();
-    return DateFormat('h:mm a').format(now);
+    return DateFormat("h:mm a").format(now);
   }
 
   @override
@@ -51,18 +66,22 @@ class _WeatherScreenState extends State<WeatherScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        //title: Text(''),
         backgroundColor: Colors.transparent,
-        elevation: 0,
+        elevation: 0.0,
         leading: IconButton(
-          icon: const Icon(Icons.near_me),
+          icon: Icon(Icons.near_me),
           onPressed: () {},
+          iconSize: 30.0,
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.location_searching),
+            icon: Icon(
+              Icons.location_searching,
+            ),
             onPressed: () {},
             iconSize: 30.0,
-          ),
+          )
         ],
       ),
       body: Container(
@@ -75,7 +94,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
               height: double.infinity,
             ),
             Container(
-              padding: const EdgeInsets.all(20.0),
+              padding: EdgeInsets.all(20.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -87,83 +106,76 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 150.0),
+                            SizedBox(
+                              height: 150.0,
+                            ),
                             Text(
-                              '${widget.weatherData.name}',
+                              '$cityName',
                               style: GoogleFonts.lato(
-                                  fontSize: 30,
+                                  fontSize: 35.0,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white),
                             ),
-                            const SizedBox(height: 8.0),
                             Row(
                               children: [
                                 TimerBuilder.periodic(
-                                  const Duration(minutes: 1),
+                                  (Duration(minutes: 1)),
                                   builder: (context) {
-                                    debugPrint(getSystemTime());
+                                    print('${getSystemTime()}');
                                     return Text(
-                                      getSystemTime(),
+                                      '${getSystemTime()}',
                                       style: GoogleFonts.lato(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white),
+                                          fontSize: 16.0, color: Colors.white),
                                     );
                                   },
                                 ),
-                                Text(
-                                  DateFormat(' - EEEE, ').format(date),
-                                  style: GoogleFonts.lato(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                ),
-                                Text(
-                                  DateFormat('yyyy-MM-dd').format(date),
-                                  style: GoogleFonts.lato(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
-                                ),
+                                Text(DateFormat(' - EEEE, ').format(date),
+                                    style: GoogleFonts.lato(
+                                        fontSize: 16.0, color: Colors.white)),
+                                Text(DateFormat('d MMM, yyy').format(date),
+                                    style: GoogleFonts.lato(
+                                        fontSize: 16.0, color: Colors.white))
                               ],
-                            ),
+                            )
                           ],
-                        ), //City Name, Date, Time
+                        ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${widget.weatherData.main!.temp!.round().toString()}\u2103',
+                              '$temp\u2103',
                               style: GoogleFonts.lato(
-                                  fontSize: 85,
+                                  fontSize: 85.0,
                                   fontWeight: FontWeight.w300,
                                   color: Colors.white),
                             ),
                             Row(
                               children: [
-                                SvgPicture.asset('svg/climacon-sun.svg'),
-                                const SizedBox(
-                                  width: 8.0,
+                                icon,
+                                SizedBox(
+                                  width: 10.0,
                                 ),
                                 Text(
-                                  '${widget.weatherData.weather![0].description}',
+                                  '$des',
                                   style: GoogleFonts.lato(
-                                      fontSize: 16.0, color: Colors.white),
+                                    fontSize: 16.0,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ],
-                            ),
+                            )
                           ],
-                        ), //Temperature
+                        )
                       ],
                     ),
                   ),
                   Column(
                     children: [
-                      const Divider(
+                      Divider(
                         height: 15.0,
                         thickness: 2.0,
                         color: Colors.white30,
-                      ),//구분자
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -172,80 +184,91 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               Text(
                                 'AQI(대기질지수)',
                                 style: GoogleFonts.lato(
-                                    fontSize: 14.0, color: Colors.white),
-                              ),
-                              const SizedBox(height: 8),
-                              Image.asset(
-                                'assets/bad.png',
-                                width: 37.0,
-                                height: 35.0,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                '"매우나쁨"',
-                                style: GoogleFonts.lato(
                                   fontSize: 14.0,
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                                 ),
                               ),
+                              SizedBox(
+                                height: 10.0,
+                              ),
+                              airIcon,
+                              SizedBox(
+                                height: 10.0,
+                              ),
+                              airState,
                             ],
-                          ),//AQI(대기질지수)
+                          ),
                           Column(
                             children: [
                               Text(
                                 '미세먼지',
                                 style: GoogleFonts.lato(
-                                    fontSize: 14.0, color: Colors.white),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                '174.75',
-                                style: GoogleFonts.lato(
-                                    fontSize: 24.0, color: Colors.white),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'µg/m3',
-                                style: GoogleFonts.lato(
                                   fontSize: 14.0,
                                   color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10.0,
+                              ),
+                              Text(
+                                '$dust1',
+                                style: GoogleFonts.lato(
+                                  fontSize: 24.0,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10.0,
+                              ),
+                              Text(
+                                '㎍/m3',
+                                style: GoogleFonts.lato(
+                                    fontSize: 14.0,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold
                                 ),
                               ),
                             ],
-                          ),//미세먼지
+                          ),
                           Column(
                             children: [
                               Text(
                                 '초미세먼지',
                                 style: GoogleFonts.lato(
-                                    fontSize: 14.0, color: Colors.white),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                '74.75',
-                                style: GoogleFonts.lato(
-                                    fontSize: 24.0, color: Colors.white),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'µg/m3',
-                                style: GoogleFonts.lato(
                                   fontSize: 14.0,
                                   color: Colors.white,
-                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10.0,
+                              ),
+                              Text(
+                                '$dust2',
+                                style: GoogleFonts.lato(
+                                  fontSize: 24.0,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 10.0,
+                              ),
+                              Text(
+                                '㎍/m3',
+                                style: GoogleFonts.lato(
+                                    fontSize: 14.0,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold
                                 ),
                               ),
                             ],
-                          ),//초미세먼지
+                          ),
                         ],
-                      ),
+                      )
                     ],
-                  ), //extra information
+                  ),
                 ],
               ),
-            ),
+            )
           ],
         ),
       ),

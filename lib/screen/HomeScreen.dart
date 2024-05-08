@@ -1,186 +1,286 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:health/screen/Map.dart';
 import 'package:health/screen/Login.dart';
 import 'package:health/screen/Search.dart';
 import 'package:health/screen/Weather_Screen.dart';
 import 'package:health/screen/loading.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class HomeScreen extends StatefulWidget{
-  const HomeScreen({Key? key}): super(key:key);
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>{
+class _HomeScreenState extends State<HomeScreen> {
   User? loggedUser;
+  String? selectedMood;
+  List<String> moodHistory = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+    loadMoodHistory();
+  }
 
   void getCurrentUser() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        loggedUser = user;
+        setState(() {
+          loggedUser = user;
+        });
       }
     } catch (e) {
       print(e);
     }
   }
 
-  @override
-  void iniState() {
-    super.initState();
-    getCurrentUser();
+  Future<void> loadMoodHistory() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      moodHistory = prefs.getStringList('moodHistory') ?? [];
+    });
+  }
+
+  Future<void> saveMood() async {
+    if (selectedMood != null) {
+      String timestamp = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String> updatedMoodHistory = [...moodHistory, '$selectedMood - $timestamp'];
+      await prefs.setStringList('moodHistory', updatedMoodHistory);
+      setState(() {
+        moodHistory = updatedMoodHistory;
+        selectedMood = null;
+      });
+    }
+  }
+
+  void resetMoodHistory() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('moodHistory');
+    setState(() {
+      moodHistory = [];
+    });
+  }
+
+  void showMoodHistory() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('기록'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: moodHistory.map((mood) {
+                return Text(mood);
+              }).toList(),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
-  Widget build(BuildContext context){
-    final title= 'Health Care'; //AppBar에 넣을 문구
+  Widget build(BuildContext context) {
+    final title = 'Health Care';
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: title,
       home: Scaffold(
         appBar: AppBar(
-            title: Text(
-              title,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 25,
-                fontWeight: FontWeight.w600,
-              ),
+          title: Text(
+            title,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 25,
+              fontWeight: FontWeight.w600,
             ),
-            centerTitle: true,
-            backgroundColor: Colors.lightGreen,
-            leading: IconButton(
-              icon: Icon(Icons.logout),
-                onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginSignupScreen()));
-                  },
-            ),
-            actions: [
-              IconButton(
-                icon: Icon(Icons.map),
-                onPressed: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const map()),
-                  );
-                },
-              )
-            ],
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.lightGreen,
+          leading: IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginSignupScreen()),
+              );
+            },
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.map),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const map()),
+                );
+              },
+            )
+          ],
         ),
-        body:
-        SafeArea(
-          child: GridView(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, //행에 보여줄 item 개수
-              childAspectRatio: 1, //가로,세로 비율
-            ),
+        body: SafeArea(
+          child: Column(
             children: [
-              Container(
-                color: Colors.redAccent,
-                child: Loading(),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Container(
-                    child: TextButton(onPressed: (){map();},
-                      child: Text('현위치'),),
+              Expanded(
+                child: GridView(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1,
                   ),
-                  Container(
-                    child: Text('날씨에 따른 주의사항: '),
-                  ),
-                  Container(
-                    child: Text('미세먼지: '),
-                  )
-                ],
-              ),
-              Container(
-                color: Colors.white,
-                  child: IconButton(
-                    icon: Image.asset('assets/medicine.png'),
-                    iconSize: 1,
-                    onPressed: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=> Search()));
-                    },
-                )
-
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Container(
-                    color: Colors.deepPurple,
-                    child: Text('걸음수: '),
-                  ),
-                ],
-              ),
-              /*
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                      onPressed: () {
+                  children: [
+                    Container(
+                      color: Colors.redAccent,
+                      child: Loading(),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Container(
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const map()),
+                              );
+                            },
+                            child: Text('현위치'),
+                          ),
+                        ),
+                        Container(
+                          child: Text('날씨에 따른 주의사항: '),
+                        ),
+                        Container(
+                          child: Text('미세먼지: '),
+                        )
+                      ],
+                    ),
+                    GestureDetector(
+                      onTap: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const map()),
+                          context,
+                          MaterialPageRoute(builder: (context) => Search()),
                         );
                       },
-                        child: Text('Search', style: TextStyle(fontSize: 25)),
-                  )
-                ],
+                      child: Container(
+                        color: Colors.white,
+                        child: Image.asset('assets/med.png'),
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Container(
+                          color: Colors.deepPurple,
+                          child: Text('걸음수: '),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              */
+              Container(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('오늘 어떠셨나요? : '),
+                        SizedBox(width: 16.0),
+                        DropdownButton<String>(
+                          value: selectedMood,
+                          onChanged: (String? value) {
+                            setState(() {
+                              selectedMood = value;
+                            });
+                          },
+                          items: <String>[
+                            '🥰행복해요',
+                            '😢슬퍼요',
+                            '😡화나요',
+                            '🤩신나요',
+                            '😐그냥그래요',
+                            '😴피곤해요',
+                            '😚설레요',
+                            '🤒아파요',
+                          ].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton(
+                          onPressed: showMoodHistory,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange, // Change the button color
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0), // Add rounded corners
+                            ),
+                          ),
+                          child: Text(
+                            '기록',
+                            style: TextStyle(color: Colors.white), // Change the text color
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: saveMood,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.lightGreen, // Change the button color
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0), // Add rounded corners
+                            ),
+                          ),
+                          child: Text(
+                            '저장',
+                            style: TextStyle(color: Colors.white), // Change the text color
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: resetMoodHistory,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red[400], // Change the button color
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0), // Add rounded corners
+                            ),
+                          ),
+                          child: Text(
+                            'Reset',
+                            style: TextStyle(color: Colors.white), // Change the text color
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
   }
-
 }
-
-class _Weather extends StatelessWidget{
-  @override
-  Widget build(BuildContext context){
-    return Container(
-      //height: MediaQuery.of(context).size.height,
-      //width: MediaQuery.of(context).size.width,
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(onPressed:(){},icon:Icon(Icons.sunny)),
-            Text(('weather')),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Status extends StatelessWidget{
-  @override
-  Widget build(BuildContext context){
-    return Container(
-      //height: MediaQuery.of(context).size.height,
-      //width: MediaQuery.of(context).size.width,
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/med.jpg'),
-            Text(('Status'))
-          ],
-        ),
-      ),
-    );
-  }
-}
-

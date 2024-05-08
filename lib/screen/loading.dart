@@ -7,14 +7,9 @@ import 'package:health/data/my_location.dart';
 import 'package:health/data/network.dart';
 import 'package:health/screen/Weather_Screen.dart';
 import 'package:intl/intl.dart';
-import 'package:health/model/current_weather.dart';
-
-// 키값은 회원가입후 무료로 1천건까지 조회가능한 키.
 const apiKey = '4f8d75a470d4a959cab723d650081ade';
 
 class Loading extends StatefulWidget {
-  const Loading({Key? key}) : super(key: key);
-
   @override
   _LoadingState createState() => _LoadingState();
 }
@@ -27,42 +22,62 @@ class _LoadingState extends State<Loading> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getLocation();
-    // fetchData();
+    //getLocation();
   }
 
   void getLocation() async {
+    Position position = await Geolocator .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     MyLocation myLocation = MyLocation();
-
     await myLocation.getMyCurrentLocation();
     latitude = myLocation.latitude;
     longitude = myLocation.longitude;
-    debugPrint('loading.dart >> ' + latitude.toString() +' / ' +longitude.toString());
+    print(latitude);
+    print(longitude);
 
-    String baseApi = 'https://api.openweathermap.org/data/2.5/weather';
     Network network = Network(
-        '$baseApi?lat=${latitude.toString()}&lon=${longitude.toString()}&appid=$apiKey&units=metric&lang=kr');
+        'https://api.openweathermap.org/data/2.5/weather'
+            '?lat=$latitude&lon=$longitude&appid=$apiKey&units=metric',
+        'https://api.openweathermap.org/data/2.5/air_pollution'
+            '?lat=$latitude&lon=$longitude&appid=$apiKey');
+
     var weatherData = await network.getJsonData();
-    debugPrint(weatherData.toString());
+    print(weatherData);
 
-    CurrentWeather currentWeather = CurrentWeather.fromJson(weatherData);
-    debugPrint(currentWeather.name);
+    var airData = await network.getAirData();
+    print(airData);
 
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => WeatherScreen(weatherData: currentWeather)));
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return WeatherScreen(
+        parseWeatherData: weatherData,
+        parseAirPollution: airData,
+      );
+    }));
   }
+
+  // void fetchData() async{
+  //
+  //     var myJson = parsingData['weather'][0]['description'];
+  //     print(myJson);
+  //
+  //     var wind = parsingData['wind']['speed'];
+  //     print(wind);
+  //
+  //     var id =parsingData['id'];
+  //     print(id);
+  //   }else{
+  //     print(response.statusCode);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: ElevatedButton(
-          onPressed: () {
-            debugPrint('ElevatedButton clicked~~');
+          onPressed: (){
+            getLocation();
           },
-          child: const Text(
+          child: Text(
             'Get my location',
             style: TextStyle(color: Colors.black),
           ),
