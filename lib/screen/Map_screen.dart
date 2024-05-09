@@ -17,8 +17,10 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState(){
     super.initState();
-    _cameraPosition=CameraPosition(target: LatLng(
-        45.521563,-122.677433
+    //지도 위치 지정
+    _cameraPosition=CameraPosition(
+        target: LatLng(
+            45.521563,-122.677433
     ), zoom: 17);
   }
 

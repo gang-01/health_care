@@ -66,7 +66,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        //title: Text(''),
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         leading: IconButton(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:health/screen/Map.dart';
 import 'package:health/screen/Login.dart';
 import 'package:health/screen/Search.dart';
@@ -125,10 +126,11 @@ class _HomeScreenState extends State<HomeScreen> {
           actions: [
             IconButton(
               icon: Icon(Icons.map),
-              onPressed: () {
+              onPressed: () async{
+                final curPosition= await Geolocator.getCurrentPosition();
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const map()),
+                  MaterialPageRoute(builder: (context) => map()),
                 );
               },
             )
