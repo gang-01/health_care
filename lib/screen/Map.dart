@@ -2,8 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:health/screen/HomeScreen.dart';
+import 'package:google_maps_webservice/places.dart';
 
 class map extends StatefulWidget{
+  static const CameraPosition _smu =
+  CameraPosition(target: LatLng(36.832225, 127.177981),
+      zoom: 15);
+
+  const map({super.key});
   @override
   _map createState() => _map();
 }
@@ -11,112 +17,46 @@ class map extends StatefulWidget{
 class _map extends State<map> {
   late GoogleMapController mapController;
   late LatLng currentLocation;
+  List<Marker> markers=[];
+
+  final _markers = <Marker>{};
+  final _users = [
+    {
+      "placeId": "장소",
+      "latitude": 36.832225,
+      "longitude": 127.177981,
+    }
+  ];
 
   @override
   void initState(){
+    _markers.addAll(_users.map(
+            (e) => Marker(
+            markerId: MarkerId(e['placeId'] as String),
+            infoWindow: InfoWindow(title: e['placeId'] as String),
+            position: LatLng(
+              e['latitude'] as double,
+              e['longitude'] as double,
+            )
+        )
+    ));
+
     super.initState();
-    _getCurrentLocation();
   }
-
-  void _onMapCreated(GoogleMapController controller) {
-    setState(() {
-      mapController = controller;
-    });
-  }
-
-  void _getCurrentLocation() async{
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high
-    );
-    setState((){
-      currentLocation= LatLng(position.latitude,position.longitude);
-    });
-  }
-
-  //지도 초기화 위치
-  static final LatLng companyLatLng = LatLng(
-    37.5233273, //위도
-    126.921252,  //경도
-  );
-
-  //약국 위치 마커 선언
-  static final Marker marker = Marker(
-    markerId: MarkerId('medicine'), //travel -> medicine으로 바꿈
-    position: companyLatLng,
-  );
-
-  //현재 위치 반경 표시
-  static final Circle circle = Circle(
-    circleId: CircleId('CheckCircle'),
-    center: companyLatLng,  //원의 중심이 되는 위치. (LatLng값 제공)
-    fillColor: Colors.blue.withOpacity(0.5),
-    radius: 100,
-    strokeColor: Colors.blue,
-    strokeWidth: 1,
-  );
-
-  //const map({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: renderAppBar(),
-        body: FutureBuilder<String>(
-            future: checkPermission(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData &&
-                  snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              if (snapshot.data == '위치 권한이 허가 되었습니다.') {
-                return Column(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: GoogleMap(
-                        onMapCreated: _onMapCreated,
-                        initialCameraPosition: CameraPosition(
-                          target: currentLocation,
-                          zoom: 16,
-                        ),
-                        myLocationEnabled: true, //내 위치를 지도에 보여주기
-                        markers: Set<Marker>.of((currentLocation != null)
-                            ?[
-                              Marker(
-                                markerId: MarkerId('current_location'),
-                                position: currentLocation,
-                                infoWindow: InfoWindow(title: "현재위치"),
-                              )
-                        ]:[]),
-                        //circles: Set.from([circle]),
-                      ),
-                    ),
-                    Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.timelapse_outlined,color: Colors.green,size: 50.0,),
-                            const SizedBox(height: 10.0),
-                            ElevatedButton(
-                                onPressed: () async{
-                                  print(currentLocation.latitude);
-                                  print(currentLocation.longitude);
-                                },
-                                child: Text('현재위치 불러오기!'))
-                          ],
-                        ))
-                  ],
-                );
-              }
-              return Center(
-                child: Text(
-                  snapshot.data.toString(),
-                ),
-              );
-            }
-        )
+        body: GoogleMap(
+          initialCameraPosition: map._smu,
+          myLocationEnabled: true,
+          mapType: MapType.normal,
+          zoomGesturesEnabled: true,
+          zoomControlsEnabled: true,
+
+          markers: _markers,
+        ),
     );
   }
 }
