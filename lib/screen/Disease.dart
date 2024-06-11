@@ -21,7 +21,7 @@ class _DiseaseInputScreenState extends State<DiseaseInputScreen> {
   }
 
   Future<void> _loadExcelData() async {
-    ByteData data= await rootBundle.load('assets/medicine.xls');
+    ByteData data= await rootBundle.load('assets/medicine.xlsx');
     final bytes= data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
     final excel= Excel.decodeBytes(bytes);
 
