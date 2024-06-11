@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:health/screen/Map.dart';
 import 'package:health/screen/Login.dart';
-import 'package:health/screen/Map_screen.dart';
-import 'package:health/screen/Search.dart';
-import 'package:health/screen/Weather_Screen.dart';
-import 'package:health/screen/chat_page.dart';
+
 import 'package:health/screen/loading.dart';
+import 'package:health/screen/walk.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'Disease.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -166,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ChatPage()),
+                        MaterialPageRoute(builder: (context) => DiseaseInputScreen()),
                       );
                     },
                   ),
@@ -176,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                        MaterialPageRoute(builder: (context) => WalkScreen()),
                       );
                     },
                   ),
