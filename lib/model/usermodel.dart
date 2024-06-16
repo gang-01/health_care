@@ -24,7 +24,6 @@ class UserModel {
       email: map["email"],
       uid : map["userUid"],
       profilePic : map["profileImageUrl"],
-      //file: map["profilepic"],
     );
   }
 }
